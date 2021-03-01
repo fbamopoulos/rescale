@@ -1,11 +1,13 @@
 from os import path, walk
 import cv2
 import numpy as np
+from pathlib import Path
 
-TARGET_DIR = '.'
+TARGET_DIR = './rescaled_images'
 SUPPORTED_EXTENSIONS = ['jpg', 'jpeg', 'png']
 THRESHOLD = 2560
 INTERPOLATION = cv2.INTER_AREA
+SUFFIX = ''
 
 
 def imread_custom(image_file_path, *args, **kwargs):
@@ -22,7 +24,6 @@ def imwrite_custom(target_path, image_bgr):
 
 def rescale_images(target_dir):
     _, _, filenames = next(walk(target_dir))
-
     for filename in filenames:
         filename_no_extension, file_extension = filename.rsplit('.', maxsplit=1)
         if file_extension.lower() not in SUPPORTED_EXTENSIONS:
@@ -51,7 +52,7 @@ def rescale_images(target_dir):
         new_resolution = (new_height, new_width)
         # for some reason cv2.resize expects the target resolution in (width, height) so I reverse it
         scaled_image = cv2.resize(input_image, new_resolution[::-1], interpolation=INTERPOLATION)
-        new_file_name = '{}_scaled.{}'.format(filename_no_extension, file_extension)
+        new_file_name = '{}{}.{}'.format(filename_no_extension, SUFFIX, file_extension)
         new_file_path = path.join(target_dir, new_file_name)
         # standard solution
         # cv2.imwrite(new_file_path, scaled_image)
@@ -62,4 +63,5 @@ def rescale_images(target_dir):
 
 
 if __name__ == '__main__':
+    Path(TARGET_DIR).mkdir(parents=True, exist_ok=True)
     rescale_images(TARGET_DIR)
