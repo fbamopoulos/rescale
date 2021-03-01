@@ -1,10 +1,23 @@
 from os import path, walk
 import cv2
+import numpy as np
 
 TARGET_DIR = '.'
 SUPPORTED_EXTENSIONS = ['jpg', 'jpeg', 'png']
 THRESHOLD = 2560
 INTERPOLATION = cv2.INTER_AREA
+
+
+def imread_custom(image_file_path, *args, **kwargs):
+    numpy_array = np.fromfile(image_file_path, dtype=np.uint8)
+    image_bgr = cv2.imdecode(numpy_array,  *args, **kwargs)
+    return image_bgr
+
+
+def imwrite_custom(target_path, image_bgr):
+    extension = target_path.rsplit('.', maxsplit=1)[-1]
+    is_success, im_buf_arr = cv2.imencode('.'+extension, image_bgr)
+    im_buf_arr.tofile(target_path)
 
 
 def rescale_images(target_dir):
@@ -15,7 +28,8 @@ def rescale_images(target_dir):
         if file_extension.lower() not in SUPPORTED_EXTENSIONS:
             continue
         file_path = path.join(target_dir, filename)
-        input_image = cv2.imread(file_path, cv2.IMREAD_UNCHANGED)
+        # input_image = cv2.imread(file_path, cv2.IMREAD_UNCHANGED)
+        input_image = imread_custom(file_path, cv2.IMREAD_UNCHANGED)
         if input_image is None:
             print('Could not read {}'.format(file_path))
             continue
@@ -37,7 +51,8 @@ def rescale_images(target_dir):
         scaled_image = cv2.resize(input_image, new_resolution[::-1], interpolation=INTERPOLATION)
         new_file_name = '{}_scaled.{}'.format(filename_no_extension, file_extension)
         new_file_path = path.join(target_dir, new_file_name)
-        cv2.imwrite(new_file_path, scaled_image)
+        # cv2.imwrite(new_file_path, scaled_image)
+        imwrite_custom(new_file_path, scaled_image)
         print('Written to {}'.format(new_file_path))
         print()
 
