@@ -16,7 +16,7 @@ def rescale_images(target_dir):
             continue
         file_path = path.join(target_dir, filename)
         input_image = cv2.imread(file_path, cv2.IMREAD_UNCHANGED)
-        if not input_image:
+        if input_image is None:
             print('Could not read {}'.format(file_path))
             continue
         input_height = input_image.shape[0]
