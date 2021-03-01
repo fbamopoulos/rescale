@@ -3,7 +3,8 @@ import cv2
 import numpy as np
 from pathlib import Path
 
-TARGET_DIR = './rescaled_images'
+INPUT_DIR = '.'
+OUTPUT_DIR = './rescaled_images'
 SUPPORTED_EXTENSIONS = ['jpg', 'jpeg', 'png']
 THRESHOLD = 2560
 INTERPOLATION = cv2.INTER_AREA
@@ -22,8 +23,8 @@ def imwrite_custom(target_path, image_bgr):
     im_buf_arr.tofile(target_path)
 
 
-def rescale_images(target_dir):
-    _, _, filenames = next(walk(target_dir))
+def rescale_images(input_dir, target_dir):
+    _, _, filenames = next(walk(input_dir))
     for filename in filenames:
         filename_no_extension, file_extension = filename.rsplit('.', maxsplit=1)
         if file_extension.lower() not in SUPPORTED_EXTENSIONS:
@@ -31,7 +32,7 @@ def rescale_images(target_dir):
         # standard solution
         # input_image = cv2.imread(file_path, cv2.IMREAD_UNCHANGED)
         # unicode solution
-        file_path = path.join(target_dir, filename)
+        file_path = path.join(input_dir, filename)
         input_image = imread_custom(file_path, cv2.IMREAD_UNCHANGED)
         if input_image is None:
             print('Could not read {}'.format(file_path))
@@ -63,5 +64,5 @@ def rescale_images(target_dir):
 
 
 if __name__ == '__main__':
-    Path(TARGET_DIR).mkdir(parents=True, exist_ok=True)
-    rescale_images(TARGET_DIR)
+    Path(OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
+    rescale_images(INPUT_DIR, OUTPUT_DIR)
