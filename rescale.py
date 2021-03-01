@@ -27,8 +27,10 @@ def rescale_images(target_dir):
         filename_no_extension, file_extension = filename.rsplit('.', maxsplit=1)
         if file_extension.lower() not in SUPPORTED_EXTENSIONS:
             continue
-        file_path = path.join(target_dir, filename)
+        # standard solution
         # input_image = cv2.imread(file_path, cv2.IMREAD_UNCHANGED)
+        # unicode solution
+        file_path = path.join(target_dir, filename)
         input_image = imread_custom(file_path, cv2.IMREAD_UNCHANGED)
         if input_image is None:
             print('Could not read {}'.format(file_path))
@@ -51,7 +53,9 @@ def rescale_images(target_dir):
         scaled_image = cv2.resize(input_image, new_resolution[::-1], interpolation=INTERPOLATION)
         new_file_name = '{}_scaled.{}'.format(filename_no_extension, file_extension)
         new_file_path = path.join(target_dir, new_file_name)
+        # standard solution
         # cv2.imwrite(new_file_path, scaled_image)
+        # unicode solution
         imwrite_custom(new_file_path, scaled_image)
         print('Written to {}'.format(new_file_path))
         print()
